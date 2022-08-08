@@ -1,5 +1,6 @@
 from type_hints import *
 from typing import Sequence
+import datetime
 
 def parse_date(timestamp: str) -> DateAlias:
     splitted_date: Sequence[str] = timestamp.split()
@@ -15,3 +16,8 @@ def keysort_for_DateAlias(date: DateAlias) -> int:
     if date == 'today':
         return 0
     return int(date.split()[1])*1000 + int(date.split()[0])
+
+def parse_datetime(datetimestamp: str) -> DateTimeAlias:
+    date_obj = datetime.datetime.fromisoformat(datetimestamp)
+    
+    return f"{date_obj.day} {date_obj.month}-{date_obj.strftime('%H:%M')}"

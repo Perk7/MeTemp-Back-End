@@ -4,8 +4,8 @@ from typing import Literal, TypedDict
 
 TimeAlias = Literal[r'[0-2]\d:[0-6]\d']
 JsonAlias = Literal
-
 DateAlias = Literal['today', r'[1-31] [1-12]']
+DateTimeAlias = Literal[f'{DateAlias}-{TimeAlias}']
 
 class WeatherType(Enum):
     SUNNY = 'sunny'
@@ -28,6 +28,7 @@ class WeatherDataWeekDayInfo(TypedDict):
     weather: WeatherType
 
 WeatherDataWeekDay = dict[Literal['day', 'night', 'evening', 'morning', TimeAlias, 'default_weather', 'default_temperature'], WeatherDataWeekDayInfo]
+WeatherDataWeekDateTime = dict[DateTimeAlias, WeatherDataWeekDayInfo]
 
 WeatherDataWeek = dict[DateAlias, WeatherDataWeekDay]
 
