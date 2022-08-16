@@ -1,4 +1,5 @@
-.crt
-.key
-__pycache__
-env
+*.crt
+*.key
+*.pem
+__pycache__/
+env/
