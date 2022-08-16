@@ -1,4 +1,3 @@
-from pprint import pprint
 import bs4
 from type_hints import *
 import yandex.parsers as yandex
@@ -22,7 +21,7 @@ def _now_linker(html_text: str) -> tuple[WeatherData, list[bs4.Tag]]:
     elem_week_hourly = [i for i in bs.select_one('.forecast-briefly__days').select('.forecast-briefly__day')][2:9]
     
     obj = { 'now': yandex.make_yandex_now(elem_now) }
-    obj['week'] = { 'today': yandex.make_yandex_now_hourly(elem_now) }
+    obj['week'] = { 'today': yandex.make_yandex_today_hourly(elem_now) }
     obj['week']['today'].update({
         'default_weather': obj['now']['weather'],
         'default_temperature': obj['now']['temperature'] 

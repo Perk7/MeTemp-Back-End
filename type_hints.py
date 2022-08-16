@@ -3,8 +3,9 @@ import json
 from typing import Literal, TypedDict
 
 TimeAlias = Literal[r'[0-2]\d:[0-6]\d']
+WeekDayAlias = Literal['пн', 'вт', 'cр', 'чт', 'пт', 'сб', 'вс']
 JsonAlias = Literal
-DateAlias = Literal['today', r'[1-31] [1-12]']
+DateAlias = Literal['today', r'[1-31] [1-12]', rf'[1-31] [1-12] ({WeekDayAlias})']
 DateTimeAlias = Literal[f'{DateAlias}-{TimeAlias}']
 
 class WeatherType(Enum):

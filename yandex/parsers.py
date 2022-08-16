@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import bs4
 import re
 
@@ -20,10 +21,9 @@ def make_yandex_now(elem_now: bs4.Tag) -> WeatherDataNow:
         'pressure': pressure_now,
     }
     
-def make_yandex_now_hourly(elem_now: bs4.Tag) -> WeatherDataWeekDay:
+def make_yandex_today_hourly(elem_now: bs4.Tag) -> WeatherDataWeekDay:
     elem = elem_now.select_one('[aria-label="Почасовой прогноз"]')
     obj = {}
-    new_day = False
     
     for i in elem:
         if any(sub in str(i) for sub in ('sunset', 'sunrise', 'separator')):
@@ -39,6 +39,32 @@ def make_yandex_now_hourly(elem_now: bs4.Tag) -> WeatherDataWeekDay:
         
     return obj
 
+def _add_weekdays_to_keys(obj: WeatherDataWeek) -> WeatherDataWeek:
+    result = {}
+    
+    weekdays = ['пн', 'вт', 'cр', 'чт', 'пт', 'сб', 'вс']
+    day = datetime.now()
+    
+    for key in obj:
+        result[key if key == 'today' else f'{key} ({weekdays[day.weekday()]})'] = obj[key]
+        day += timedelta(days=1)
+        
+    return result
+
+def _make_yandex_week_partly(obj: WeatherDataWeek, elem_week: list[bs4.Tag]):
+    dayparts = ['morning', 'day', 'evening', 'night']    
+    for i in elem_week:
+        datestamp = i.select_one('.a11y-hidden').text.split(',')[1][1:]
+        obj[parse_date(datestamp)].update({
+            dayparts[ind]: {
+                'temperature': (sum(map(int, el.select_one('.weather-table__temp').text.split('…')))//2) if '…' in el.select_one('.weather-table__temp').text else int(el.select_one('.weather-table__temp').text),
+                'weather': srs.yandex_weather_days_setter(el.select_one('img')['src'])
+            }
+            for ind, el in enumerate(i.select('.weather-table__row'))
+        })
+        
+    return obj
+
 def make_yandex_week(elem_week_hourly: list[bs4.Tag], elem_week: list[bs4.Tag]) -> WeatherDataWeek:
     obj = {}
     
@@ -50,15 +76,6 @@ def make_yandex_week(elem_week_hourly: list[bs4.Tag], elem_week: list[bs4.Tag]) 
             'default_temperature': int(i.select_one('.forecast-briefly__temp_day').text)
         }
         
-    dayparts = ['morning', 'day', 'evening', 'night']    
-    for i in elem_week:
-        datestamp = i.select_one('.a11y-hidden').text.split(',')[1][1:]
-        obj[parse_date(datestamp)].update({
-            dayparts[ind]: {
-                'temperature': sum(map(int, el.select_one('.weather-table__temp').text.split('…')))//2,
-                'weather': srs.yandex_weather_days_setter(el.select_one('img')['src'])
-            }
-            for ind, el in enumerate(i.select('.weather-table__row'))
-        })
+    obj = _make_yandex_week_partly(obj, elem_week)
         
-    return obj
+    return _add_weekdays_to_keys(obj)

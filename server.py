@@ -7,21 +7,19 @@ from pprint import pprint
 
 from type_hints import *
 from views import *
-from merging import merge
 from ip_maker import make_env_ip
 
 from dotenv import dotenv_values
 
 async def debug():
-    pprint(await get_data_from_owm({
+    pprint(await get_data_from_yandex({
         'lat': 53.983815,
         'lon': 79.238604
     }))
         
 async def get_data(req: aiohttp.ClientRequest) -> aiohttp.ClientResponse:
-    obj_yandex = await get_data_from_yandex(req.query)
-    obj_owm = await get_data_from_owm(req.query)
-    data = merge((obj_yandex, obj_owm))
+    yandex_obj = await get_data_from_yandex(req.query)
+    data = json.dumps(yandex_obj)
     
     return web.json_response(
         data=data, 
@@ -34,7 +32,7 @@ if __name__ == '__main__':
     config = dotenv_values("../.env") 
     
     ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-    ssl_context.load_cert_chain('./192.168.1.10.crt', './192.168.1.10.key')
+    ssl_context.load_cert_chain(f"./{config['REACT_APP_SERVER']}.pem", f"./{config['REACT_APP_SERVER']}-key.pem")
     app = web.Application()
     
     match sys.argv[1]:
