@@ -2,6 +2,7 @@ from type_hints import *
 
 def yandex_weather_now_setter(string: str) -> str:
     if string in ('Облачно с прояснениями', 
+                  'Малооблачно',
                   ):
         return WeatherType['CLOUDLY'].value
     
