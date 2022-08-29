@@ -12,14 +12,21 @@ from ip_maker import make_env_ip
 from dotenv import dotenv_values
 
 async def get_data(req: aiohttp.ClientRequest) -> aiohttp.ClientResponse:
-    yandex_obj = await get_data_from_yandex(req.query)
-    data = json.dumps(yandex_obj)
-    
-    return web.json_response(
-        data=data, 
-        headers={
-            "Access-Control-Allow-Origin": "*",
-        })
+    if 'lat' in req.query and 'lon' in req.query:
+        yandex_obj = await get_data_from_yandex(req.query)
+        data = json.dumps(yandex_obj)
+        
+        return web.json_response(
+            data=data, 
+            headers={
+                "Access-Control-Allow-Origin": "*",
+            })
+    else:
+        return web.Response(
+            text='Please, set a latitude (lat) and longitude (lon) to your URL query', 
+            headers={
+                "Access-Control-Allow-Origin": "*",
+            })
     
 if __name__ == '__main__':
     app = web.Application()
