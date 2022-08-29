@@ -46,8 +46,8 @@ def _add_weekdays_to_keys(obj: WeatherDataWeek) -> WeatherDataWeek:
     day = datetime.now()
     
     for key in obj:
-        result[key if key == 'today' else f'{key} ({weekdays[day.weekday()]})'] = obj[key]
         day += timedelta(days=1)
+        result[key if key == 'today' else f'{key} ({weekdays[day.weekday()]})'] = obj[key]
         
     return result
 

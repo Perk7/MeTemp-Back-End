@@ -43,7 +43,8 @@ if __name__ == '__main__':
         
             web.run_app(app, host=config['REACT_APP_SERVER'], port=8000, ssl_context=ssl_context)
         case 'prod':
-            web.run_app(app, port=os.environ['PORT'])
-            
+            #web.run_app(app, port=os.environ['PORT'])
+            config = dotenv_values("../.env")
+            web.run_app(app, host=config['REACT_APP_SERVER'], port=8000)
             
     asyncio.run(asyncio.sleep(0.1))
