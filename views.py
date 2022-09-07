@@ -18,4 +18,5 @@ async def get_data_from_yandex(coords: Hashable) -> WeatherData:
             f'https://yandex.ru/pogoda/details?lat={coords["lat"]}&lon={coords["lon"]}'
         )
         results = await asyncio.gather(*[fetch(session, url) for url in urls])
+        
     return yandex_main_linker(*results)

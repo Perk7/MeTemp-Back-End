@@ -4,29 +4,29 @@ from aiohttp import web
 import aiohttp
 import asyncio
 import ssl
+from cache.caching import get_data_with_cache
 
 from type_hints import *
-from views import *
 from ip_maker import make_env_ip
 
 from dotenv import dotenv_values
 
 async def get_data(req: aiohttp.ClientRequest) -> aiohttp.ClientResponse:
+    headers={
+        "Access-Control-Allow-Origin": "*",
+    }
     if 'lat' in req.query and 'lon' in req.query:
-        yandex_obj = await get_data_from_yandex(req.query)
-        data = json.dumps(yandex_obj)
+        data = await get_data_with_cache(req.query)
         
         return web.json_response(
             data=data, 
-            headers={
-                "Access-Control-Allow-Origin": "*",
-            })
+            headers=headers
+            )
     else:
         return web.Response(
             text='Please, set a latitude (lat) and longitude (lon) to your URL query', 
-            headers={
-                "Access-Control-Allow-Origin": "*",
-            })
+            headers=headers
+            )
     
 if __name__ == '__main__':
     app = web.Application()
