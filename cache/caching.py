@@ -17,7 +17,7 @@ async def get_data_with_cache(coords: Hashable) -> WeatherData:
             with open('cache/cache.json', 'w') as f:
                 f.write(json.dumps(object))
                 
-    return object
+    return json.dumps(object)
             
 async def make_weather_obj_for_cache(time_now: int, coords: Hashable) -> WeatherData:
     data = await get_data_from_yandex(coords)
@@ -28,4 +28,4 @@ async def make_weather_obj_for_cache(time_now: int, coords: Hashable) -> Weather
     return data
             
 def check_cache_need(data_obj: WeatherData) -> bool:
-    return list(data_obj['week'].values())[1]
+    return 'day' in list(data_obj['week'].values())[1].keys()
