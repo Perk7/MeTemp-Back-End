@@ -4,10 +4,10 @@ from aiohttp import web
 import aiohttp
 import asyncio
 import ssl
-from cache.caching import get_data_with_cache
 
 from type_hints import *
 from ip_maker import make_env_ip
+from views import get_forecast_data
 
 from dotenv import dotenv_values
 
@@ -16,17 +16,11 @@ async def get_data(req: aiohttp.ClientRequest) -> aiohttp.ClientResponse:
         "Access-Control-Allow-Origin": "*",
     }
     if 'lat' in req.query and 'lon' in req.query:
-        data = await get_data_with_cache(req.query)
-        
-        return web.json_response(
-            data=data, 
-            headers=headers
-            )
+        data = await get_forecast_data(req.query)
+        return web.json_response(data=data, headers=headers)
     else:
-        return web.Response(
-            text='Please, set a latitude (lat) and longitude (lon) to your URL query', 
-            headers=headers
-            )
+        text='Please, set a latitude (lat) and longitude (lon) to your URL query'
+        return web.Response(text=text, headers=headers)
     
 if __name__ == '__main__':
     app = web.Application()

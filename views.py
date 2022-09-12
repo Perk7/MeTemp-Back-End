@@ -1,6 +1,9 @@
 import asyncio
 from typing import Hashable
 import aiohttp
+import json
+from time import time
+from typing import Hashable
 
 from type_hints import *
 from yandex.linkers import yandex_main_linker
@@ -20,3 +23,13 @@ async def get_data_from_yandex(coords: Hashable) -> WeatherData:
         results = await asyncio.gather(*[fetch(session, url) for url in urls])
         
     return yandex_main_linker(*results)
+            
+async def get_forecast_data(coords: Hashable) -> WeatherData:
+    data = await get_data_from_yandex(coords)
+    while check_rerequest_need(data):
+        data['week'] = await get_data_from_yandex(coords)['week']
+    
+    return data
+            
+def check_rerequest_need(data_obj: WeatherData) -> bool:
+    return not ( 'day' in list(data_obj['week'].values())[1].keys() )
