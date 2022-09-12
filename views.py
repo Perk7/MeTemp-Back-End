@@ -29,7 +29,7 @@ async def get_forecast_data(coords: Hashable) -> WeatherData:
     while check_rerequest_need(data):
         data['week'] = await get_data_from_yandex(coords)['week']
     
-    return data
+    return json.dumps(data)
             
 def check_rerequest_need(data_obj: WeatherData) -> bool:
     return not ( 'day' in list(data_obj['week'].values())[1].keys() )
