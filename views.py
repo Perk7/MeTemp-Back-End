@@ -27,7 +27,8 @@ async def get_data_from_yandex(coords: Hashable) -> WeatherData:
 async def get_forecast_data(coords: Hashable) -> WeatherData:
     data = await get_data_from_yandex(coords)
     while check_rerequest_need(data):
-        data['week'] = await get_data_from_yandex(coords)['week']
+        new_data = await get_data_from_yandex(coords)
+        data['week'] = new_data['week']
     
     return json.dumps(data)
             
