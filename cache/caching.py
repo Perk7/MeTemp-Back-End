@@ -21,8 +21,8 @@ async def get_data_with_cache(coords: Hashable) -> WeatherData:
             
 async def make_weather_obj_for_cache(time_now: int, coords: Hashable) -> WeatherData:
     data = await get_data_from_yandex(coords)
-    if not check_cache_need(data):
-        data['week'] = obj['week'] if obj else await get_data_from_yandex(coords)['week']
+    if not check_cache_need(data) and not data['week']:
+        data['week'] = await get_data_from_yandex(coords)['week']
     data['expire'] = time_now
     
     return data
