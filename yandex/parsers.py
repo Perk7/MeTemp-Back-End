@@ -57,7 +57,7 @@ def _make_yandex_week_partly(obj: WeatherDataWeek, elem_week: list[bs4.Tag]):
         datestamp = i.select_one('.a11y-hidden').text.split(',')[1][1:]
         obj[parse_date(datestamp)].update({
             dayparts[ind]: {
-                'temperature': (sum(map(int, el.select_one('.weather-table__temp').text.split('…')))//2) if '…' in el.select_one('.weather-table__temp').text else int(el.select_one('.weather-table__temp').text),
+                'temperature': (sum(map(int, el.select_one('.weather-table__temp').text.replace('−', '-').split('…')))//2) if '…' in el.select_one('.weather-table__temp').text else int(el.select_one('.weather-table__temp').text.replace('−', '-')),
                 'weather': srs.yandex_weather_days_setter(el.select_one('img')['src'])
             }
             for ind, el in enumerate(i.select('.weather-table__row'))
